@@ -96,9 +96,15 @@ def extract_audio_url(story: dict) -> Optional[str]:
 
 
 def story_series_ids(story: dict) -> set[str]:
-    ids = set(story.get("series_ids") or [])
-    if story.get("series_id"):
-        ids.add(story["series_id"])
+    # The UUIDs live in `series[]` (and in the story's meta); for logged-in requests the
+    # top-level `series_id`/`series_ids` hold series *names*, so keep those only as a fallback
+    meta = ((story.get("story_content") or {}).get("meta")) or {}
+    ids = {s["series_id"] for s in story.get("series") or [] if s.get("series_id")}
+    ids.update(meta.get("seriesIds") or [])
+    ids.update(story.get("series_ids") or [])
+    for single in (story.get("series_id"), meta.get("seriesId")):
+        if single:
+            ids.add(single)
     return ids
 
 
@@ -159,6 +165,7 @@ def episode_meta(config: Config, story: dict, audio_url: str) -> dict:
         "image_url": image_url(config, story.get("story_image") or story.get("cover_image")),
         "link": story.get("url") or f"https://www.demodemo.no/historie/{story['story_id']}",
         "audio_url": audio_url,
+        "series_ids": sorted(story_series_ids(story)),
     }
 
 
@@ -313,6 +320,36 @@ async def list_feed_stories(client: DemoClient, config: Config, slug: str) -> li
     return stories
 
 
+async def prune_excluded_episodes(client: DemoClient, config: Config, slug: str):
+    """Remove harvested episodes that belong to an excluded series (e.g. ones fetched
+    before exclusion worked, or after `exclude_series_ids` was changed)."""
+    feed_config = config.feeds[slug]
+    excluded = set(feed_config.exclude_series_ids)
+    if feed_config.series_id or not excluded:
+        return
+    for episode_id in harvested_episode_ids(config, slug):
+        meta_path = build_episode_meta_path(config, slug, episode_id)
+        try:
+            meta = json.loads(meta_path.read_text())
+        except Exception:
+            continue
+        if "series_ids" not in meta:
+            try:
+                meta["series_ids"] = sorted(story_series_ids(await client.story(episode_id)))
+            except Exception as exc:
+                print(f"[WARN] Could not look up series for {episode_id}: {exc}")
+                continue
+            meta_path.write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
+        if set(meta["series_ids"]) & excluded:
+            for path in (
+                build_episode_file_path(config, slug, episode_id),
+                meta_path,
+                build_episode_file_path(config, slug, episode_id).with_suffix(".unavailable"),
+            ):
+                path.unlink(missing_ok=True)
+            print(f"[INFO] Removed '{slug}/{episode_id}' ({meta.get('title')}): series is excluded")
+
+
 async def harvest_feed(client: DemoClient, config: Config, slug: str):
     if slug not in config.feeds:
         print(f"[FAIL] The slug '{slug}' did not match any feeds in the config file")
@@ -330,6 +367,7 @@ async def harvest_feed(client: DemoClient, config: Config, slug: str):
     for f in feed_dir.glob("*_interim.mp3"):
         print(f"[INFO] Removing stale interim file: {f.name}")
         f.unlink()
+    await prune_excluded_episodes(client, config, slug)
 
     existing_ids = set(harvested_episode_ids(config, slug))
     to_harvest = [s for s in stories if s["story_id"] not in existing_ids]
