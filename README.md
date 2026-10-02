@@ -47,7 +47,9 @@ services:
 The crontab controls when harvesting runs (see [`docker/crontab.example`](docker/crontab.example)):
 
 ```cron
-*/15 5-22 * * * cd /app || exit 1; PATH=$PATH:/usr/local/bin demorss harvest >> /var/log/demorss.log 2>&1
+5,20,35,50 5-6 * * 1-5 cd /app || exit 1; PATH=$PATH:/usr/local/bin demorss harvest >> /var/log/demorss.log 2>&1
+5,20,35,50 15-17 * * 1-5 cd /app || exit 1; PATH=$PATH:/usr/local/bin demorss harvest >> /var/log/demorss.log 2>&1
+0 9,12,20,23 * * * cd /app || exit 1; PATH=$PATH:/usr/local/bin demorss harvest >> /var/log/demorss.log 2>&1
 ```
 
 ---

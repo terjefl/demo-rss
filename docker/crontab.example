@@ -1,3 +1,6 @@
-# Morgenfugl is published ~06:30 on weekdays, Demontert ~15:30 — check every 15 minutes in daytime
-*/15 5-22 * * * cd /app || exit 1; PATH=$PATH:/usr/local/bin demorss harvest >> /var/log/demorss.log 2>&1
+# Demo publishes on weekdays: articles 05:00, Morgenfugl ~06:30, Demontert ~15:30–17:15.
+# Poll every 15 minutes around those times, plus a few daily safety-net runs.
+5,20,35,50 5-6 * * 1-5 cd /app || exit 1; PATH=$PATH:/usr/local/bin demorss harvest >> /var/log/demorss.log 2>&1
+5,20,35,50 15-17 * * 1-5 cd /app || exit 1; PATH=$PATH:/usr/local/bin demorss harvest >> /var/log/demorss.log 2>&1
+0 9,12,20,23 * * * cd /app || exit 1; PATH=$PATH:/usr/local/bin demorss harvest >> /var/log/demorss.log 2>&1
 # Empty line to please the cron gods ...
