@@ -74,7 +74,7 @@ Your Demo account. Only needed for feeds without `series_id` (all stories). Eith
 |---|---|
 | `series_id` | UUID from `demodemo.no/serie/<series_id>`. Omit for all stories with audio. |
 | `exclude_series_ids` | Series to leave out of an all-stories feed |
-| `title`, `description`, `image_url` | Override the channel metadata (read from the series by default) |
+| `title`, `description`, `image_url` | Override the channel metadata (read from the series by default; feeds without a series get the Demo logo) |
 | `feed_name` | Base filename of the RSS XML (default `feed`) |
 | `most_recent_episodes_limit` | Only harvest the N newest stories (default 30, `null` for all) |
 

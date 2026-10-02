@@ -31,7 +31,7 @@ feeds:
   # Each key is a slug you choose — used in the URL and as the folder name on disk
   # series_id: found in the URL demodemo.no/serie/<series_id>. Omit for all stories with audio.
   # exclude_series_ids: series to leave out of an all-stories feed
-  # title / description / image_url: override what is read from the series
+  # title / description / image_url: override what is read from the series (default image: the Demo logo)
   # feed_name: base filename for the RSS XML (default: "feed")
   # most_recent_episodes_limit: only harvest the N most recent stories (default: 30, null = all)
   morgenfugl:

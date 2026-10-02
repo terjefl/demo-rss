@@ -18,6 +18,11 @@ STORY_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{4,40}$")
 
 DEFAULT_TITLE = "Demo"
 DEFAULT_DESCRIPTION = "Demo — nyheter uten støy"
+# Demo's "D" logo (the site favicon) rendered by Sanity as a 1400×1400 JPG on white
+DEFAULT_IMAGE_URL = (
+    "https://cdn.sanity.io/images/p4ow0o3m/production/"
+    "d86890ee99c38fc26af10c8737a7583d152c463d-192x192.svg?w=1400&h=1400&fm=jpg&bg=ffffff&q=90"
+)
 
 
 # --- Client context manager ---
@@ -203,7 +208,7 @@ def load_channel_meta(config: Config, slug: str) -> dict:
     return {
         "title": feed_config.title or meta.get("title") or DEFAULT_TITLE,
         "description": feed_config.description or meta.get("description") or DEFAULT_DESCRIPTION,
-        "image_url": feed_config.image_url or meta.get("image_url") or "",
+        "image_url": feed_config.image_url or meta.get("image_url") or DEFAULT_IMAGE_URL,
         "link": meta.get("link") or "https://www.demodemo.no",
     }
 
