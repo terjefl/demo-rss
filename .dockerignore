@@ -1,0 +1,5 @@
+yield/**/*
+config.yaml
+.env
+venv/**/*
+.venv/**/*

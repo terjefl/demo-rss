@@ -1,0 +1,7 @@
+__pycache__
+venv
+.venv
+yield
+config.yaml
+.env
+.DS_Store

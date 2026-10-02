@@ -1,0 +1,46 @@
+---
+host: "https://<your-domain-here>"  # Public URL — used to build links in RSS feeds and index
+yield_dir: "yield"                  # Directory for downloaded MP3s and generated RSS feeds
+
+# Access control (choose one, or omit for no auth)
+#
+# Option 1 — single shared secret: all users use ?secret=<value> on all requests
+#secret: "<optional-access-secret>"
+#
+# Option 2 — per-user secrets: each user gets their own secret and private RSS feeds.
+# When users are configured, `secret` above is ignored for auth.
+#users:
+#  - alias: "alice"
+#    secret: "<alice-secret>"
+
+# Set to true to disable the HTML index page (GET /)
+#disable_index: false
+
+# Your Demo account. Series feeds work without it; a feed without `series_id`
+# (all stories) needs it. Use email + password, or — if you log in with
+# Google/Apple/Facebook — a Supabase refresh token as a one-time seed.
+auth:
+  email: "<your-demo-email>"
+  password: "<your-demo-password>"
+  #refresh_token: "<refresh-token>"
+
+#api:
+#  max_concurrent_downloads: 3
+
+feeds:
+  # Each key is a slug you choose — used in the URL and as the folder name on disk
+  # series_id: found in the URL demodemo.no/serie/<series_id>. Omit for all stories with audio.
+  # exclude_series_ids: series to leave out of an all-stories feed
+  # title / description / image_url: override what is read from the series
+  # feed_name: base filename for the RSS XML (default: "feed")
+  # most_recent_episodes_limit: only harvest the N most recent stories (default: 30, null = all)
+  morgenfugl:
+    series_id: "a7027044-3eb2-4e4d-9e96-18c8202d8180"
+  demontert:
+    series_id: "bdea66d7-d802-4814-85d5-f2952554cffa"
+  demo:
+    title: "Demo"
+    description: "Alle Demo-historier med lyd, unntatt Morgenfugl og Demontert"
+    exclude_series_ids:
+      - "a7027044-3eb2-4e4d-9e96-18c8202d8180"
+      - "bdea66d7-d802-4814-85d5-f2952554cffa"
